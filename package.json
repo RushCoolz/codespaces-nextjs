@@ -1,13 +1,67 @@
 {
+  "name": "wayfinder-linux",
+  "version": "0.1.0",
+  "description": "Local Linux readiness checker and compatibility guide",
   "private": true,
   "scripts": {
-    "dev": "next",
+    "dev": "next dev --hostname 127.0.0.1",
     "build": "next build",
-    "start": "next start"
+    "start": "HOSTNAME=127.0.0.1 node .next/standalone/server.js",
+    "app": "npm run build && npm run electron:prepare && electron .",
+    "web:app": "npm run build && node scripts/launch-local.js",
+    "electron:prepare": "node scripts/prepare-electron.js",
+    "electron:dist": "npm run build && npm run electron:prepare && electron-builder --linux AppImage",
+    "test": "node --test tests/*.test.js"
   },
   "dependencies": {
     "next": "^16.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "electron": "^44.9.2",
+    "electron-builder": "26.15.3"
+  },
+  "main": "electron/main.cjs",
+  "desktopName": "Wayfinder",
+  "build": {
+    "appId": "org.wayfinder.linux",
+    "productName": "Wayfinder",
+    "asar": true,
+    "files": [
+      "electron/main.cjs",
+      "package.json",
+      "licenses/AreWeAntiCheatYet-MIT.txt"
+    ],
+    "extraResources": [
+      {
+        "from": "electron-resources/wayfinder",
+        "to": "wayfinder"
+      }
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "linux": {
+      "category": "Utility",
+      "synopsis": "Linux readiness and application compatibility guide",
+      "description": "Read-only Linux readiness checks with community-sourced game and Windows application compatibility links.",
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm",
+        "pacman"
+      ],
+      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "desktop": {
+        "entry": {
+          "Name": "Wayfinder",
+          "GenericName": "Linux compatibility guide",
+          "Comment": "Check Linux readiness and find app compatibility reports",
+          "Categories": "Utility;System;",
+          "Keywords": "Linux;compatibility;Proton;Wine;anti-cheat;"
+        }
+      }
+    }
   }
 }
